@@ -7,6 +7,13 @@ const tamanhoTabuleiro = {
     w: 300
 };
 
+// Pontos
+let pontos = 0;
+
+let contador = 0;
+let intervalo = 500;
+let ultimoTempo = 0;
+
 // Direções
 const direcoes = {
     ArrowUp: "up",
@@ -51,12 +58,9 @@ function gerarMatrix(w, h) {
     return matrix;
 }
 
-let contador = 0;
-let intervalo = 500;
-let ultimoTempo = 0;
-
 // Anexa a peca ao tabuleiro
 function anexar(dadosDasPecas, player) {
+    pontos = pontos + 50;
     player.peca.forEach((linha, y) => {
         linha.forEach((value, x) => {
             if (value !== 0) {
@@ -64,8 +68,27 @@ function anexar(dadosDasPecas, player) {
             }
         });
     });
+    verificarLinha(dadosDasPecas);
 }
 
+// Verifica se a linha esta cheia e remove ela
+function verificarLinha(dadosDasPecas) {
+    dadosDasPecas.forEach((linha, y) => {
+        if(linha.every(element => element != 0)) {
+            dadosDasPecas.splice(y, 1);
+            dadosDasPecas.unshift(new Array(tamanhoTabuleiro['w'] / 20).fill(0));
+            pontos = pontos + ((y + 1) * 10);
+        }
+    });
+}
+
+// Finaliza o jogo e salva a pontuação
+function gameOver() {
+    sessionStorage.setItem("lastPoints", pontos);
+    if (pontos.recordAtual > localStorage.getItem("bestRecord")) localStorage.setItem("bestRecord", pontos);
+}
+
+// Verifica Colisão
 function colidiu(dadosDasPecas, player) {
     const pecaDoPlayer = player.peca;
     const posicaoDoPlayer = player.pos;
@@ -117,8 +140,12 @@ function atulizar(time = 0) {
         player.pos.y++;
         if (colidiu(dadosDasPecas, player)) {
             player.pos.y--;
+            if (player.pos.y === -1) {
+                gameOver()
+                return;
+            };
             anexar(dadosDasPecas, player);
-            player.pos.y = -1;
+            player.pos = { x: 6, y: -1 };
             escolherPeca();
             player.cor = classPeca.escolherCor();
         }
@@ -157,13 +184,21 @@ async function movimento(key) {
             playerMove.pos.x += 1;
             break;
         case "up":
-            playerMove.peca = await girar(playerMove.peca, -1);
+            playerMove.peca = await girar(playerMove.peca);
+            // Valida o movimento
+            if (playerMove.pos.x + 2 >= tamanhoTabuleiro['w'] / 20 || colidiu(dadosDasPecas, playerMove)) {
+                playerMove.peca = await girar(playerMove.peca);
+                playerMove.peca = await girar(playerMove.peca);
+                playerMove.peca = await girar(playerMove.peca);
+                return;
+            }
             break;
     }
-    if (playerMove.pos.x + 2 >= tamanhoTabuleiro['w'] / 20 || colidiu(dadosDasPecas, playerMove)) {
-        console.log('1');
+    // Valida o movimento
+    if (playerMove.pos.x + 2 > tamanhoTabuleiro['w'] / 20 || colidiu(dadosDasPecas, playerMove)) {
         return
-    }
+    };
+
     player.pos = {
         x: playerMove.pos.x,
         y: playerMove.pos.y
@@ -172,8 +207,8 @@ async function movimento(key) {
 }
 
 document.addEventListener('keypress', tecla => {
-    movimento(tecla.key);
+    movimento(tecla.key.toLocaleLowerCase());
 })
 
-escolherPeca()
-atulizar()
+escolherPeca();
+atulizar();

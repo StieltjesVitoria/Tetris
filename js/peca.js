@@ -1,8 +1,4 @@
 class Peca {
-    constructor() {
-
-    }
-
     conjuntoDePecas = [
         [
             [0, 0, 0],
