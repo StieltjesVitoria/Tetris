@@ -47,6 +47,19 @@ const direcoes = {
     q: "rotateR",
 };
 
+const fases = {
+    1000: 450,
+    5000: 400,
+    10000: 350,
+    15000: 300,
+    20000: 250,
+    25000: 200,
+    30000: 150,
+    35000: 100,
+    40000: 50,
+    100000: 10,
+};
+
 let contador = 0;
 let intervalo = 500;
 let ultimoTempo = 0;
@@ -79,7 +92,6 @@ function verificarLinha(dadosDasPecas) {
             dadosDasPecas.splice(y, 1);
             dadosDasPecas.unshift(new Array(tabuleiro.getW / tabuleiro.getS).fill(0));
             player.setPontos = player.getPontos + ((y + 1) * 10);
-            acelerarJogo(true);
         }
     });
 }
@@ -135,16 +147,6 @@ function draw(tabuleiro, desenhoTabuleiro, peca, pos) {
     gerarPeca(tabuleiro.getDados, { x: 0, y: 0 }, desenhoTabuleiro);
 }
 
-//Acelerar Jogo 
-function acelerarJogo(limpou) {
-    cancelAnimationFrame(rodarJogo);
-    if (limpou) {
-        intervalo = intervalo + 2;
-    } else {
-        intervalo = intervalo - 2;
-    }
-}
-
 // Roda o jogo
 function rodarJogo(time = 0) {
     const deltaTime = time - ultimoTempo;
@@ -159,8 +161,6 @@ function rodarJogo(time = 0) {
                 return;
             };
             anexar(tabuleiro.getDados, player);
-            acelerarJogo(false)
-            console.log(intervalo)
             player.setPos = { x: 6, y: -1 };
             player.setPeca = player.getProxPeca;
             player.setProxPeca = pecaClass.getPeca();
@@ -230,7 +230,7 @@ document.addEventListener('keypress', tecla => {
 function iniciarJogo() {
     startGame = true;
     draw(tabuleiropProxPeca, desenhoProximaPeca, player.getProxPeca, { x: 1, y: 1 });
-    rodarJogo();
+    // rodarJogo();
 }
 
 iniciarJogo()
