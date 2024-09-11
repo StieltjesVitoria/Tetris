@@ -1,19 +1,66 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Tetris</title>
     <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="./css/bootstrap.min.css">
 </head>
 
-<body>
-
-    <canvas id="tetris"></canvas>
+<body class="bg-secondary">
+    <div class="container mt-5 text-center">
+        <div class="row mb-3 align-items-center">
+            <div class="col">
+                <h1>Tetris</h1>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col"></div>
+            <div class="col">
+                <canvas id="tetris"></canvas>
+            </div>
+            <div class="col align-self-start text-start">
+                <div class="row">
+                    <div class="col">
+                        <canvas id="proxPeca"></canvas>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h4>Placar</h4>
+                        <strong>
+                            <p id="placar"></p>
+                        </strong>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h4>Ultima Partida</h4>
+                        <strong>
+                            <p id="ultimaPartida"></p>
+                        </strong>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <h4>Record</h4>
+                        <strong>
+                            <p id="record"></p>
+                        </strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="./js/classes.js"></script>
     <script src="./js/main.js"></script>
-
+    <script src="./js/bootstrap/bootstrap.bundle.min.js"></script>
+    <script src="./js/bootstrap/bootstrap.min.js"></script>
+    <script src="./js/bootstrap/popper.min.js"></script>
 </body>
+
 </html>

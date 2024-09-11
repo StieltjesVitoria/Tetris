@@ -54,7 +54,7 @@ class Peca {
         }
         peca.reverse();
         return peca;
-    }
+    }s
 
     // Função que gera uma cor HEX aleátoria
     #escolherCor() {
@@ -93,13 +93,15 @@ class Player {
      * @param {number[][]} peca
      * @param {{x: number, y: number}} pos
      */
-    constructor(peca) {
+    constructor(peca, proxPeca) {
         this.#peca = peca;
+        this.#proxPeca = proxPeca
     }
 
     #x = 6;
     #y = -1;
     #peca = [[0]];
+    #proxPeca = [[0]];
     #pontos = 0;
 
     get getPos() {
@@ -108,6 +110,10 @@ class Player {
 
     get getPeca() {
         return this.#peca;
+    }
+
+    get getProxPeca() {
+        return this.#proxPeca;
     }
 
     get getPontos() {
@@ -149,6 +155,13 @@ class Player {
      */
     set setPeca(peca) {
         this.#peca = peca;
+    }
+
+    /**
+     * @param {number[][]} peca
+     */
+    set setProxPeca(peca) {
+        this.#proxPeca = peca;
     }
 
     /**

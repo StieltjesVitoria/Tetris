@@ -1,13 +1,10 @@
-body {
-    margin: 0;
-    background: darkgray;
-    overflow: hidden;
-    text-align: center;
-}
-
-#tetris {
+#tetris, #proxPeca {
     background: lightgray;
     border-color: gray;
     border-width: 5px;
     border-style: solid;
+}
+
+body{
+    height: 100%;
 }

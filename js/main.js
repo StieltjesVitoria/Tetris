@@ -2,21 +2,36 @@
 const pecaClass = new Peca;
 
 // Player
-const player = new Player(pecaClass.getPeca());
+const player = new Player(pecaClass.getPeca(), pecaClass.getPeca());
 
 // Tabuleiro
-const tabuleiro = new Tabuleiro(300, 600, tabuleiro.getS);
+const tabuleiro = new Tabuleiro(300, 600, 20);
+const tabuleiropProxPeca = new Tabuleiro(120, 120, 20);
 
 // Tag HTML do Tabuleiro
 const canvas = document.getElementById('tetris');
 canvas.height = tabuleiro.getH;
 canvas.width = tabuleiro.getW;
 
+// Tag HTML da proxima peça
+const canvasProxPeca = document.getElementById('proxPeca');
+canvasProxPeca.height = tabuleiropProxPeca.getH;
+canvasProxPeca.width = tabuleiropProxPeca.getW;
+
+// Tag HTML dos pontos
+document.getElementById('placar').innerHTML = player.getPontos;
+document.getElementById('ultimaPartida').innerHTML = sessionStorage.getItem('lastPoints');
+document.getElementById('record').innerHTML = localStorage.getItem('bestRecord');
+
 // Tabuleiro de forma 2D
 const desenhoTabuleiro = canvas.getContext('2d');
+const desenhoProximaPeca = canvasProxPeca.getContext('2d');
 
 // Padrão de tamanho de peça gerado por Matrix
 desenhoTabuleiro.scale(tabuleiro.getS, tabuleiro.getS);
+desenhoProximaPeca.scale(tabuleiropProxPeca.getS, tabuleiropProxPeca.getS);
+
+let startGame = false;
 
 // Direções
 const direcoes = {
@@ -64,6 +79,7 @@ function verificarLinha(dadosDasPecas) {
             dadosDasPecas.splice(y, 1);
             dadosDasPecas.unshift(new Array(tabuleiro.getW / tabuleiro.getS).fill(0));
             player.setPontos = player.getPontos + ((y + 1) * 10);
+            acelerarJogo(true);
         }
     });
 }
@@ -73,6 +89,9 @@ function gameOver() {
     sessionStorage.setItem("lastPoints", player.getPontos);
     if (player.getPontos > localStorage.getItem("bestRecord")) localStorage.setItem("bestRecord", player.getPontos);
     cancelAnimationFrame(0);
+    document.getElementById('placar').innerHTML = player.getPontos;
+    document.getElementById('ultimaPartida').innerHTML = sessionStorage.getItem('lastPoints');
+    document.getElementById('record').innerHTML = localStorage.getItem('bestRecord');
 }
 
 // Reinicia o jogo
@@ -102,15 +121,28 @@ function colidiu(dadosDasPecas, player) {
 
 // Desenha 
 /**
- * @param {any[][]} dadosDasPecas
+ * @param {any[][]} tabuleiro
+ * @param {canvas} desenhoTabuleiro
+ * @param {{x: number, y: number}} pos
+ * @param {number[][]} peca
  */
-function draw(dadosDasPecas) {
-    desenhoTabuleiro.fillStyle = "lightgray";
-    desenhoTabuleiro.fillRect(0, 0, canvas.width, canvas.height);
-    // Dados do Tabuleiro
-    gerarPeca(dadosDasPecas, { x: 0, y: 0 }, desenhoTabuleiro);
+function draw(tabuleiro, desenhoTabuleiro, peca, pos) {
+    desenhoTabuleiro.fillStyle = "black";
+    desenhoTabuleiro.fillRect(0, 0, tabuleiro.getW, tabuleiro.getH);
     // Dados do player
-    gerarPeca(player.getPeca, player.getPos, desenhoTabuleiro);
+    gerarPeca(peca, pos, desenhoTabuleiro);
+    // Dados do Tabuleiro
+    gerarPeca(tabuleiro.getDados, { x: 0, y: 0 }, desenhoTabuleiro);
+}
+
+//Acelerar Jogo 
+function acelerarJogo(limpou) {
+    cancelAnimationFrame(rodarJogo);
+    if (limpou) {
+        intervalo = intervalo + 2;
+    } else {
+        intervalo = intervalo - 2;
+    }
 }
 
 // Roda o jogo
@@ -127,27 +159,38 @@ function rodarJogo(time = 0) {
                 return;
             };
             anexar(tabuleiro.getDados, player);
+            acelerarJogo(false)
+            console.log(intervalo)
             player.setPos = { x: 6, y: -1 };
-            player.setPeca = pecaClass.getPeca();
+            player.setPeca = player.getProxPeca;
+            player.setProxPeca = pecaClass.getPeca();
         }
         contador = 0;
     }
-    draw(tabuleiro.getDados);
+    draw(tabuleiro, desenhoTabuleiro, player.getPeca, player.getPos);
+    draw(tabuleiropProxPeca, desenhoProximaPeca, player.getProxPeca, { x: 1, y: 1 });
+    document.getElementById('placar').innerHTML = player.getPontos;
     requestAnimationFrame(rodarJogo);
 }
 
-function gerarPeca(peca, pos, tabuleiro) {
+/**
+ * @param {number[][]} peca
+ * @param {{x: number, y: number}} pos
+ * @param {canvas} desenhoTabuleiro
+ */
+function gerarPeca(peca, pos, desenhoTabuleiro) {
     peca.forEach((linha, y) => {
         linha.forEach((valor, x) => {
             if (valor !== 0) {
-                tabuleiro.fillStyle = valor;
-                tabuleiro.fillRect(x + pos.x, y + pos.y, 1, 1);
+                desenhoTabuleiro.fillStyle = valor;
+                desenhoTabuleiro.fillRect(x + pos.x, y + pos.y, 1, 1);
             }
         });
     });
 }
 
 async function movimento(key) {
+    if (!startGame) return;
     const playerMove = new Player(player.getPeca);
     playerMove.setPos = player.getPos;
     switch (direcoes[key]) {
@@ -172,7 +215,7 @@ async function movimento(key) {
             break;
     }
     // Valida o movimento
-    if (playerMove.getPosX + 2 >= tabuleiro.getW / tabuleiro.getS || colidiu(tabuleiro.getDados, playerMove)) {
+    if (playerMove.getPosX + 1 >= tabuleiro.getW / tabuleiro.getS || colidiu(tabuleiro.getDados, playerMove)) {
         return
     };
 
@@ -184,4 +227,10 @@ document.addEventListener('keypress', tecla => {
     movimento(tecla.key.toLocaleLowerCase());
 })
 
-rodarJogo();
+function iniciarJogo() {
+    startGame = true;
+    draw(tabuleiropProxPeca, desenhoProximaPeca, player.getProxPeca, { x: 1, y: 1 });
+    rodarJogo();
+}
+
+iniciarJogo()
