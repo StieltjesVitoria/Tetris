@@ -2,7 +2,7 @@
 const pecaClass = new Peca;
 
 // Player
-const player = new Player(pecaClass.getPeca(), pecaClass.getPeca());
+const player = new Player(pecaClass.getPeca(), pecaClass.getPecaInicias());
 
 // Tabuleiro
 const tabuleiro = new Tabuleiro(300, 600, 20);
@@ -60,9 +60,7 @@ const fases = {
     100000: 10,
 };
 
-let contador = 0;
-let intervalo = 500;
-let ultimoTempo = 0;
+let intervalo = 300;
 
 // Anexa a peca ao tabuleiro
 /**
@@ -147,30 +145,39 @@ function draw(tabuleiro, desenhoTabuleiro, peca, pos) {
     gerarPeca(tabuleiro.getDados, { x: 0, y: 0 }, desenhoTabuleiro);
 }
 
-// Roda o jogo
-function rodarJogo(time = 0) {
-    const deltaTime = time - ultimoTempo;
-    ultimoTempo = time;
-    contador += deltaTime;
-    if (contador > intervalo) {
-        player.setPosY = player.getPosY + 1;
-        if (colidiu(tabuleiro.getDados, player)) {
-            player.setPosY = player.getPosY - 1;
-            if (player.getPosY === -1) {
-                gameOver()
-                return;
-            };
-            anexar(tabuleiro.getDados, player);
-            player.setPos = { x: 6, y: -1 };
-            player.setPeca = player.getProxPeca;
-            player.setProxPeca = pecaClass.getPeca();
-        }
-        contador = 0;
+// Animação do jogo
+function animacaoDoJogo() {
+    if (colidiu(tabuleiro.getDados, player)) {
+        player.setPosY = player.getPosY - 1;
+        if (player.getPosY === -1) {
+            gameOver()
+            return;
+        };
+        anexar(tabuleiro.getDados, player);
+        selecionarProxPeca();
+        player.setPos = { x: 6, y: -1 };
+        
     }
     draw(tabuleiro, desenhoTabuleiro, player.getPeca, player.getPos);
-    draw(tabuleiropProxPeca, desenhoProximaPeca, player.getProxPeca, { x: 1, y: 1 });
+    draw(tabuleiropProxPeca, desenhoProximaPeca, player.getListProxPeca[0], { x: 1, y: 1 });
     document.getElementById('placar').innerHTML = player.getPontos;
-    requestAnimationFrame(rodarJogo);
+}
+
+// Roda o Jogo
+function rodarJogo() {
+    player.setPosY = player.getPosY + 1;
+    animacaoDoJogo();
+    setTimeout(rodarJogo, intervalo)
+}
+
+function selecionarProxPeca() {
+    player.setPeca = player.getListProxPeca[0];
+    player.setListProxPeca = pecaClass.getPeca();
+    if(player.getListProxPeca.length <= 1) {
+        player.setListProxPeca = pecaClass.getPeca();
+        player.setListProxPeca = pecaClass.getPeca();
+        player.setListProxPeca = pecaClass.getPeca();
+    };
 }
 
 /**
@@ -220,7 +227,7 @@ async function movimento(key) {
     };
 
     player.setPos = playerMove.getPos;
-    rodarJogo(0)
+    animacaoDoJogo();
 }
 
 document.addEventListener('keypress', tecla => {
@@ -229,8 +236,8 @@ document.addEventListener('keypress', tecla => {
 
 function iniciarJogo() {
     startGame = true;
-    draw(tabuleiropProxPeca, desenhoProximaPeca, player.getProxPeca, { x: 1, y: 1 });
-    // rodarJogo();
+    draw(tabuleiropProxPeca, desenhoProximaPeca, player.getListProxPeca[0], { x: 1, y: 1 });
+    rodarJogo();
 }
 
 iniciarJogo()

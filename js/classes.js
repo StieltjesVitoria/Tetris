@@ -43,6 +43,10 @@ class Peca {
         return this.#escolherPeca;
     }
 
+    get getPecaInicias() {
+        return this.#gerarPecasInicias;
+    }
+
     /**
     * @param {number[][]} peca
     **/
@@ -86,22 +90,29 @@ class Peca {
         });
         return peca;
     }
+
+    #gerarPecasInicias() {
+        const listPecas = [];
+        let peca1 = this.#escolherPeca();
+        listPecas.push(peca1);
+        return listPecas;
+    }
 }
 
 class Player {
     /**
      * @param {number[][]} peca
-     * @param {{x: number, y: number}} pos
+     * @param {number[][][]} listProxPecas
      */
-    constructor(peca, proxPeca) {
+    constructor(peca, listProxPecas) {
         this.#peca = peca;
-        this.#proxPeca = proxPeca
+        this.#listProxPecas = listProxPecas
     }
 
     #x = 6;
     #y = -1;
     #peca = [[0]];
-    #proxPeca = [[0]];
+    #listProxPecas = [[[0]]];
     #pontos = 0;
 
     get getPos() {
@@ -112,8 +123,8 @@ class Player {
         return this.#peca;
     }
 
-    get getProxPeca() {
-        return this.#proxPeca;
+    get getListProxPeca() {
+        return this.#listProxPecas;
     }
 
     get getPontos() {
@@ -160,8 +171,9 @@ class Player {
     /**
      * @param {number[][]} peca
      */
-    set setProxPeca(peca) {
-        this.#proxPeca = peca;
+    set setListProxPeca(peca) {
+        this.#listProxPecas.shift()
+        this.#listProxPecas.push(peca);
     }
 
     /**
