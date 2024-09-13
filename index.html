@@ -10,50 +10,14 @@
     <link rel="stylesheet" href="./css/bootstrap.min.css">
 </head>
 
-<body class="bg-secondary">
-    <div class="container mt-5 text-center">
-        <div class="row mb-3 align-items-center">
-            <div class="col">
-                <h1>Tetris</h1>
+<body class="bg-color vh-100">
+    <div class="container text-center h-100">
+        <div id="menu" class="row align-items-center h-100">
+            <div class="col-4 d-grid gap-3 mx-auto align-self-center">
+                <button onclick="iniciarJogo()" class="btn btn-primary" type="button"> Start Game </button>
+                <button onclick="iniciarJogo2P()" class="btn btn-primary" type="button"> 2P (In Dev) </button>
             </div>
-        </div>
-        <div class="row align-items-center">
-            <div class="col"></div>
-            <div class="col">
-                <canvas id="tetris"></canvas>
-            </div>
-            <div class="col align-self-start text-start">
-                <div class="row">
-                    <div class="col">
-                        <canvas id="proxPeca"></canvas>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h4>Placar</h4>
-                        <strong>
-                            <p id="placar"></p>
-                        </strong>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h4>Ultima Partida</h4>
-                        <strong>
-                            <p id="ultimaPartida"></p>
-                        </strong>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col">
-                        <h4>Record</h4>
-                        <strong>
-                            <p id="record"></p>
-                        </strong>
-                    </div>
-                </div>
-            </div>
-        </div>
+        </div>    
     </div>
 
     <script src="./js/classes.js"></script>

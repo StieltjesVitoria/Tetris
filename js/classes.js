@@ -39,6 +39,10 @@ class Peca {
         ],
     ]
 
+    get getCor() {
+        return this.#escolherCor;
+    }
+
     get getPeca() {
         return this.#escolherPeca;
     }
@@ -58,7 +62,7 @@ class Peca {
         }
         peca.reverse();
         return peca;
-    }s
+    }
 
     // Função que gera uma cor HEX aleátoria
     #escolherCor() {
@@ -94,7 +98,9 @@ class Peca {
     #gerarPecasInicias() {
         const listPecas = [];
         let peca1 = this.#escolherPeca();
-        listPecas.push(peca1);
+        let peca2 = this.#escolherPeca();
+        let peca3 = this.#escolherPeca();
+        listPecas.push(peca1, peca2, peca3);
         return listPecas;
     }
 }
@@ -116,7 +122,7 @@ class Player {
     #pontos = 0;
 
     get getPos() {
-        return {x: this.#x, y: this.#y};
+        return { x: this.#x, y: this.#y };
     }
 
     get getPeca() {
@@ -169,11 +175,14 @@ class Player {
     }
 
     /**
-     * @param {number[][]} peca
+     * @param {number[][][]} listPeca
      */
-    set setListProxPeca(peca) {
+    set setListProxPeca(listPeca) {
+        this.#listProxPecas = this.#listProxPecas.concat(listPeca);
+    }
+
+    removeProxPeca() {
         this.#listProxPecas.shift()
-        this.#listProxPecas.push(peca);
     }
 
     /**
@@ -245,10 +254,10 @@ class Tabuleiro {
 
     // Método que gera um tabuleiro em forma de matrix para que possa ser guardado as peças
     #gerarMatrix(w, h) {
-    const matrix = [];
-    while (h--) {
-        matrix.push(new Array(w).fill(0));
+        const matrix = [];
+        while (h--) {
+            matrix.push(new Array(w).fill(0));
+        }
+        return matrix;
     }
-    return matrix;
-}
 }
